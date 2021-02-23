@@ -1,0 +1,36 @@
+---
+- name: "Server | Installation"
+  remote_user: root
+  hosts: all
+  become: true
+  tasks:
+    - include_vars:
+        file: vars.yml
+    - name: "User | {{ vm.user }} user creation"
+      user:
+        name: "{{ vm.user }}"
+        shell: /bin/bash
+    - name: "User | Ssh Key"
+      authorized_key:
+        user: "{{ vm.user }}"
+        state: present
+        key: "{{ lookup('file', vm.ssh_key_pass) }}"
+    - name: "User | Add {{ vm.user }} user to sudoers"
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: "^{{ vm.user }}"
+        line: "{{ vm.user }} ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
+      when: vm.user_is_sudo
+    - name: "APT | Update & Upgrade"
+      apt:
+        force_apt_get: yes
+        upgrade: dist
+        update_cache: yes
+    - include_role:
+        name: tools
+      when: tools.enabled
+    - include_role:
+        name: php
+      when: php.enabled

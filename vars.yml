@@ -1,0 +1,20 @@
+---
+vm:
+  name: "{{ lookup('env', 'VM_NAME' | default('lab', True) ) }}"
+  ip: "{{ lookup('env', 'VM_IP' | default('0.0.0.0', True) ) }}"
+  memory: "{{ lookup('env', 'VM_MEMORY' | default('2048', True) ) }}"
+  cpu: "{{ lookup('env', 'VM_CPU' | default('1', True) ) }}"
+  user: "{{ lookup('env', 'VM_USER' | default('1', True) ) }}"
+  user_is_sudo: true
+  ssh_key_pass: "~/.ssh/id_rsa.pub"
+tools:
+  enabled: "{{ lookup('env', 'TOOLS_ENABLED' | default('true', True) ) }}"
+php:
+  enabled: "{{ lookup('env', 'PHP_ENABLED' | default('true', True) ) }}"
+  version: "{{ lookup('env', 'PHP_VERSION' | default('7.4', True) ) }}"
+  repo: "deb https://packages.sury.org/php/ buster main"
+  gpg: "https://packages.sury.org/php/apt.gpg"
+  fpm_package_name: "php{{ lookup('env', 'PHP_VERSION' | default('7.4', True) ) }}-fpm"
+  composer:
+    enabled: "{{ lookup('env', 'COMPOSER_ENABLED' | default('true', True) ) }}"
+    path: "/usr/bin/composer"

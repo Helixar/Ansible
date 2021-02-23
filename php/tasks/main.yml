@@ -1,0 +1,39 @@
+---
+- name: "PHP | Check if Service Exists"
+  stat: path=/etc/init.d/{{ php.fpm_package_name }}
+  register: service_status
+
+- name: "PHP | Add Sury's APT key"
+  apt_key:
+    url: "{{ php.gpg }}"
+    state: present
+  when: not service_status.stat.exists
+- name: "PHP | Add Sury's APT repository"
+  apt_repository:
+    repo: "{{ php.repo }}"
+    state: present
+    update_cache: yes
+  when: not service_status.stat.exists
+- name: "PHP | Packages installation"
+  apt:
+    update_cache: yes
+    name:
+      - "php{{ php.version }}-fpm"
+      - "php{{ php.version }}-cli"
+      - "php{{ php.version }}-common"
+      - "php{{ php.version }}-curl"
+      - "php{{ php.version }}-dev"
+      - "php{{ php.version }}-gd"
+      - "php{{ php.version }}-intl"
+      - "php{{ php.version }}-json"
+      - "php{{ php.version }}-mbstring"
+      - "php{{ php.version }}-opcache"
+      - "php{{ php.version }}-pgsql"
+      - "php{{ php.version }}-mysql"
+      - "php{{ php.version }}-xml"
+      - "php{{ php.version }}-zip"
+      - "php{{ php.version }}-readline"
+    state: present
+  when: not service_status.stat.exists
+- include_tasks: composer.yml
+  when: php.composer.enabled == 'true'

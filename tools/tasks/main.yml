@@ -1,0 +1,24 @@
+---
+- name: "Tools | Installation"
+  apt:
+    name:
+      - fish
+      - vim
+      - curl
+      - git
+      - build-essential
+      - lsb-release
+      - software-properties-common
+      - gnupg2
+      - ca-certificates
+    state: present
+- name: "Tools | Vim dotfile"
+  get_url:
+    url: https://raw.githubusercontent.com/Helixar/dotfiles/master/vim/.vimrc
+    dest: ~/.vimrc
+- name: "Tools | Vim dotfile for {{ lookup('env', 'VM_USER' | default('nobody', True) ) }}"
+  get_url:
+    url: https://raw.githubusercontent.com/Helixar/dotfiles/master/vim/.vimrc
+    dest: /home/{{ lookup('env', 'VM_USER' | default('nobody', True) ) }}/.vimrc
+    group: "{{ lookup('env', 'VM_USER' | default('nobody', True) ) }}"
+    owner: "{{ lookup('env', 'VM_USER' | default('nobody', True) ) }}"
